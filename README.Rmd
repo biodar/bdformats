@@ -63,11 +63,12 @@ if(!dir.exists("Example_Met_Office_H5_Data_Share")) {
   unzip("Example_Met_Office_H5_Data_Share-20210614T102649Z-002.zip")
   unzip("Example_Met_Office_H5_Data_Share/All_Files.zip")
 }
-
+install.packages("ncmeta")
 ```
 
 ```{r}
 scan1 = stars::read_ncdf("202007170002_polar_pl_radar20b2_augzdr_lp.h5")
+# Error: `distinct()` must use existing variables.
 ```
 
 
