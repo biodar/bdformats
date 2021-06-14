@@ -1,0 +1,81 @@
+---
+title: "Processing HDF5 data in R"
+author: "Chris Hassall"
+date: "14/06/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Finding packages
+There are a few packages needed - check when the errors come up what you need to install. Now that with rgdal, a recent Mac update (Big Sur) might have broken this on Macs. The new package (I think) fixes that so it needs reinstalling
+```{r}
+library(rgdal)
+library(rhdf5)
+library(ggplot2)
+```
+
+### Load in example dataset from Maryna
+This dataset is a standard UK weather radar scan that contains a single "PPI". This has information relating to the rotation of the radar (360 increments - 1 degree per increment), and a series of distances from the radar (425 increments)
+```{r}
+testData<-h5read("202007170002_polar_pl_radar20b2_augzdr_lp.h5","/dataset1/data1/data")
+str(testData)
+```
+
+Turn matrix into long format, add angles and distances from radar to build polar coordinates
+
+```{r}
+data.df<-data.frame(value=as.vector(testData),theta=rep(c(1:360),425),radius=rep(c(1:425),each=360))
+```
+
+Then use trigonometry to calculate x and y (note that the scan is a single elevation, so treating it as flat for now)
+
+```{r}
+data.df$x = data.df$radius*cos(data.df$theta)
+data.df$y = data.df$radius*sin(data.df$theta)
+```
+
+Where value is zero, assuming NoData. This seems to be coded as "0" in the value of the data
+
+```{r}
+data.df$value[data.df$value==0]<-NA
+```
+
+Now we can plot the data with the full 153,000 points:
+
+```{r}
+# Quick plot - big dataset!
+plot(data.df$x,data.df$y,cex=0.1)
+```
+
+This is too many points to deal with for a test dataset, so we can drop some of the data under 50 units of range away from the radar. This is probably about 5km distance from the radar but the actual distance doesn't matter for now.
+
+```{r}
+data.df.small<-subset(data.df,data.df$radius<50)
+```
+
+And visualise the new dataset
+
+```{r}
+plot(data.df.small$x,data.df.small$y,cex=0.1)
+```
+
+Now we can apply the value offset to convert the integer values stored in the h5 dataset back to the radar variable using the gain and offset that are found in the "what" part of the h5 data1 dataset:
+   :gain = 0.1; // double
+   :offset = -32.0; // double
+I am not sure if I have applied them correctly here, but (again) it can be corrected later on
+
+```{r}
+data.df.small$value<-data.df.small$value*0.1-32
+```
+
+...and now plot again with the values coded by colour:
+
+```{r}
+sp<-ggplot(data.df.small, aes(x=x, y=y,color=value)) + geom_point() 
+sp + scale_color_gradient(low="blue", high="red")
+```
+
+
