@@ -46,4 +46,33 @@ add_grid(data = df, lat = "lat", lon = "lng", cell_size = 10000,
          colour_range = viridisLite::plasma(6))
 ```
 
+# NetCDF data
+
+Get data:
+
+```{r, eval=FALSE, echo=FALSE}
+piggyback::pb_upload("Example_Met_Office_H5_Data_Share-20210614T102649Z-002.zip")
+```
+
+```{r, eval=FALSE}
+if(!file.exists("Example_Met_Office_H5_Data_Share-20210614T102649Z-002.zip")) {
+  download.file("...")
+}
+
+if(!dir.exists("Example_Met_Office_H5_Data_Share")) {
+  unzip("Example_Met_Office_H5_Data_Share-20210614T102649Z-002.zip")
+  unzip("Example_Met_Office_H5_Data_Share/All_Files.zip")
+}
+
+```
+
+```{r}
+scan1 = stars::read_ncdf("202007170002_polar_pl_radar20b2_augzdr_lp.h5")
+```
+
+
+
+
+
+
 
