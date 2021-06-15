@@ -64,9 +64,21 @@ str(testData)
 # Turn matrix into long format, add angles and distances from radar to build polar coordinates
 data.df<-data.frame(value=as.vector(testData),theta=rep(c(1:360),425),radius=rep(c(1:425),each=360))
 
-# Trigonometry to calculate x and y (note that the scan is a single elevation, so treating it as flat for now)
+# Extract lat and long of the radar from the /where data in the h5 file
+RadarLoc<-h5readAttributes(basename(f),"/where")
+# Trigonometry to calculate x and y coordinates of each point in the scan
+# note that the scan is a single elevation, so treating it as flat for now)
 data.df$x = data.df$radius*cos(data.df$theta)
 data.df$y = data.df$radius*sin(data.df$theta)
+
+# Now calculate the change in latitude and longitude for each of those points
+# https://stackoverflow.com/questions/2187657/calculate-second-point-knowing-the-starting-point-and-distance
+delta_longitude = data.df$x/(111320*cos(RadarLoc$lat))  # dx, dy in meters
+delta_latitude = data.df$y/110540                       # result in degrees long/lat
+
+# Calculate the lat and long of each point in the radar scan
+data.df$lat  = RadarLoc$lat+delta_latitude
+data.df$long = RadarLoc$lon+delta_longitude
 
 # Where value is zero, assuming NoData
 data.df$value[data.df$value==0]<-NA
@@ -74,35 +86,75 @@ data.df$value[data.df$value==0]<-NA
 # Quick plot - big dataset!
 plot(data.df$x,data.df$y,cex=0.1)
 
-# Make dataset smaller by removing points further than 50 units (about 5km, I think) from the radar
-data.df.small<-subset(data.df,data.df$radius<50)
-
-# Plot the smaller dataset
-plot(data.df.small$x,data.df.small$y,cex=0.1)
+# Quick plot - big dataset!
+plot(data.df$long,data.df$lat,cex=0.1)
 
 # Apply the value offest to convert the integer values stored in the h5 dataset back to the radar variable
 # The gain and offset are in the "what" part of the h5 data1 dataset
 #   :gain = 0.1; // double
 #   :offset = -32.0; // double
 # I am not sure if I have applied them correctly here...
-data.df.small$value<-data.df.small$value*0.1-32
+data.df$value<-(data.df$value*0.1)-32
 
-# Visualising the new, smaller data with the values.
+# Make dataset smaller by removing points further than 5km from the radar
+data.df.small<-subset(data.df,data.df$radius<5000)
+
+# Plot the smaller dataset
+plot(data.df.small$x,data.df.small$y,cex=0.1)
+
+
+
+# Mapping the dataset with static ggplot2 maps
+# Based on https://bookdown.org/yann_ryan/r-for-newspaper-data/mapping-with-r-geocode-and-map-the-british-librarys-newspaper-collection.html
 library(ggplot2)
-sp<-ggplot(data.df.small, aes(x=x, y=y,color=value)) + geom_point() 
-sp + scale_color_gradient(low="blue", high="red")
+worldmap = map_data('world')
+ggplot() + 
+  geom_polygon(data = worldmap, aes(x = long, 
+                                    y = lat, 
+                                    group = group), 
+               fill = 'gray90', 
+               color = 'black') + 
+  coord_fixed(ratio = 1.3, 
+              xlim = c(-10,3), 
+              ylim = c(50, 59)) + 
+  theme_void() +
+  geom_point(data=data.df, 
+             aes(x=long, 
+                 y=lat,
+                 color=value)) +
+  scale_color_gradient(low="blue", high="red")
+
+# Something a bit fancier based on Mapbox
+# Based on Robin's work https://geocompr.robinlovelace.net/adv-map.html
+library(mapdeck)
+#set_token(TOKEN)
+ms = mapdeck_style("light")
+mapdeck(style = ms, pitch = 45, location = c(0, 52), zoom = 4) %>%
+add_pointcloud(
+  data = data.df, lat = "lat", lon = "long",
+  radius = 5,
+  fill_colour = "value",
+  palette = "viridis",
+  na_colour = "#808080FF",
+  legend = TRUE,
+  legend_options = NULL,
+  legend_format = NULL,
+  update_view = TRUE,
+  focus_layer = FALSE,
+  digits = 6,
+  transitions = NULL,
+  brush_radius = NULL
+)
 ```
 ## hdf5r
 
 ```{r read}
 
-f = "~/Documents/Research/BioDAR/Example_Met_Office_H5_Data_Share/202007170002_polar_pl_radar20b2_augzdr_lp.h5"
-
 library(rhdf5)
-df = h5ls(f)
+df = h5ls(basename(f))
 class(df)
 head(df)
-d = h5read(f, "dataset1/data1/data")
+d = h5read(basename(f), "dataset1/data1/data")
 class(d)
 nrow(d)
 length(d)
