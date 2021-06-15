@@ -1,0 +1,32 @@
+---
+title: Going from hdf5 to ?
+output: github_document
+---
+```{r notRunning}
+# library(tidyverse)
+# library(bioRad)
+# 
+# f = "~/Documents/Research/BioDAR/Example_Met_Office_H5_Data_Share/202007170002_polar_pl_radar20b2_augzdr_lp.h5"
+# f %>%
+#   read_pvolfile() %>%
+#   get_scan(3) %>%
+#   project_as_ppi() %>%
+#   plot(param = "VRADH") # VRADH = radial velocity in m/s
+# 
+# pvol = read_pvolfile(f)
+```
+## hdf5r
+
+```{r read}
+
+f = "~/Documents/Research/BioDAR/Example_Met_Office_H5_Data_Share/202007170002_polar_pl_radar20b2_augzdr_lp.h5"
+
+library(rhdf5)
+df = h5ls(f)
+class(df)
+head(df)
+d = h5read(f, "dataset1/data1/data")
+class(d)
+nrow(d)
+d[1, ]
+```
