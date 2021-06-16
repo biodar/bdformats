@@ -234,7 +234,7 @@ plot(data.df$long,data.df$lat,cex=0.1)
 data.df$value<-(data.df$value*0.1)-32
 
 # Make dataset smaller by removing points further than 5km from the radar
-data.df.small<-subset(data.df,data.df$radius<5000)
+data.df.small<-subset(data.df,data.df$radius<50)
 
 # Plot the smaller dataset
 plot(data.df.small$x,data.df.small$y,cex=0.1)
@@ -267,34 +267,39 @@ ggplot() +
 ![](README_files/figure-gfm/chris-code-4.png)<!-- -->
 
 ``` r
+# devtools::install_github("ATFutures/geoplumber")
+# install.packages(sf)
+# data.df.sample <- data.df[sample(nrow(data.df), 5e3),]
+# data.sf <- sf::st_as_sf(data.df.sample, coords=c("long", "lat"))
+# geoplumber::gp_map(data.sf)
+# lf <- geoplumber::gp_map(data.sf, browse_map = FALSE)
+# htmltools::includeHTML(lf)
+
+
 # Something a bit fancier based on Mapbox
 # Based on Robin's work https://geocompr.robinlovelace.net/adv-map.html
-library(mapdeck)
+# library(mapdeck)
 #set_token(TOKEN)
-ms = mapdeck_style("light")
-mapdeck(style = ms, pitch = 45, location = c(0, 52), zoom = 4) %>%
-add_pointcloud(
-  data = data.df, lat = "lat", lon = "long",
-  radius = 5,
-  fill_colour = "value",
-  palette = "viridis",
-  na_colour = "#808080FF",
-  legend = TRUE,
-  legend_options = NULL,
-  legend_format = NULL,
-  update_view = TRUE,
-  focus_layer = FALSE,
-  digits = 6,
-  transitions = NULL,
-  brush_radius = NULL
-)
+# ms = mapdeck_style("light")
+# mapdeck(style = ms, pitch = 45, location = c(0, 52), zoom = 4) %>%
+# add_pointcloud(
+#   data = data.df, lat = "lat", lon = "long",
+#   radius = 5,
+#   fill_colour = "value",
+#   palette = "viridis",
+#   na_colour = "#808080FF",
+#   legend = TRUE,
+#   legend_options = NULL,
+#   legend_format = NULL,
+#   update_view = TRUE,
+#   focus_layer = FALSE,
+#   digits = 6,
+#   transitions = NULL,
+#   brush_radius = NULL
+# )
 ```
 
-    ## Registered S3 method overwritten by 'jsonlite':
-    ##   method     from   
-    ##   print.json jsonify
-
-![](README_files/figure-gfm/chris-code-5.png)<!-- --> \#\# hdf5r
+## hdf5r
 
 ``` r
 library(rhdf5)
