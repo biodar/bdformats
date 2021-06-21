@@ -339,3 +339,34 @@ length(d)
 ```
 
     ## [1] 153000
+
+## Calculating Z for each data point
+
+from Chris and Maryna’s emails:
+
+425 are the different distances, and I think they might be 100m \[600m\]
+intervals (i.e. the furthest is 42.5km\[100m\*425\] from the radar).
+
+1 – The z is contained in the filename (b0 = lowest elevation, b1 = next
+elevation, etc). However, I don’t know the scanning angle associated
+with each of the elevations. Maryna? Obviously it will be another piece
+of trigonometry to calculate the heights at each distance, because the
+scan is always increasing in height away from the radar. Indeed, the z
+also needs to be included in the x,y calculations because the elevated
+beam means that the range actually travels a shorter distance relative
+to the ground:
+
+![](README_files/z-value.png)
+
+2 – The “PPI” scan has a conical structure and scans the volume of air
+within that cone. What we get is a general scan of each region (voxel)
+within that volume. The radar then reports 10 different variables for
+each voxel. The radar doesn’t pick up individual objects.
+
+![](README_files/voxel-to-shape.png) 3 - bioRad::beam\_height height of
+radar voxels should be calculated applying 4/3 refraction model you can
+find beam height calculation in beam\_height function
+<https://github.com/adokter/bioRad/blob/master/R/beam.R>
+beam\_height(range, elev, k = 4/3, lat = 51, re = 6378, rp = 6357 This
+is how to call the function with our latitude The description can be
+found here <http://adriaandokter.com/bioRad/reference/beam_height.html>
