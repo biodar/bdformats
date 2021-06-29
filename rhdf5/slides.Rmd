@@ -1,0 +1,90 @@
+---
+title: "Visualizing h5 data"
+subtitle: "bioAtlas"
+abstract: ""
+author: 
+  - L Hama
+date: '`r Sys.Date()`'
+output:
+  revealjs::revealjs_presentation:
+    theme: night
+    reveal_options:
+      slideNumber: true
+      previewLinks: true
+# bibliography: refs.bib
+---
+
+## bioAtlas
+
+The aim of the project is to process .h5 data and hopefully generate some 3D bug models. Slide through time to see how they move around?
+
+# Project Overview
+
+* bioRad R package (fork etc)
+* jsfive JS package
+* Data from jasmin.ac.uk
+* Swim with bugs? Why is has there been none? Computation?
+
+# eAtlas 
+
+* Release makes it easier to add layers
+* pointcloud can take normals, colours etc
+* 
+
+# JASMIN
+
+* Seems even login is a service one needs to apply for (done)
+* Access to .h5s please!
+
+<!-- # References -->
+
+
+<style>
+.box {
+    border-radius: 3px;
+    position: relative;  /*  <--- */
+    font-style: italic;
+    text-align: center;
+    padding: 1rem 1.2rem;
+    /* width: 80%;   create space for the quotes */
+    color: #4a4a4a;
+    margin: 1rem auto 2rem;
+    color: #4a4a4a;
+    background: #E8E8E8;
+}
+/* -- create the quotation marks -- */
+.box:before,
+.box:after{
+    font-family: FontAwesome;
+    position: absolute;
+    /* -- inside the relative position of blockquote -- */
+    top: 13px;
+    color: #E8E8E8;
+    font-size: 34px;
+}
+.box:before{
+    content: "\f10d";
+    margin-right: 13px;
+    right: 100%;
+}
+.box:after{
+    content: "\f10e";
+    margin-left: 13px;
+    left: 100%;  
+}
+
+.container{
+    display: flex;
+}
+.col{
+    max-width:50%;
+    flex: 1;
+}
+body {
+    background-image: url(https://resources.library.leeds.ac.uk/final-chapter/img/logo_min_upperx.png);
+    background-size: 10%;
+    background-repeat: no-repeat;
+    background-position: 3% 96%;
+}
+</style>
+<!-- https://user-images.githubusercontent.com/408568/118673703-2161f000-b7f1-11eb-84af-1fd3b15a94cd.png -->
