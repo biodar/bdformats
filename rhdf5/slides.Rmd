@@ -20,9 +20,8 @@ The aim of the project is to process .h5 data and hopefully generate some 3D bug
 
 # Project Overview
 
-* bioRad R package (fork etc) [@bioRad]
-* jsfive JS package
-* Data from jasmin.ac.uk
+* Data access including data from jasmin.ac.uk
+* Data processing including client side data processing (.h5)
 * Swim with bugs? Why is has there been none? Computation?
 
 # JASMIN
@@ -31,11 +30,16 @@ The aim of the project is to process .h5 data and hopefully generate some 3D bug
 * Access to .h5s seems to be allowed only from a "domain" of the email registered. Not there yet in any case.
 
 # .h5
-
-* Format and managing data
+<div class="container">
+<div class="col">
+* bioRad R package (fork etc) [@bioRad] relies on rhdf5 R package [@rhdf5]
+* jsfive JS package [@jsfive]
+* Format and managing/streaming data 
 * Understanding various "products" [@dualpol]
-
-
+</div>
+<div class="col">
+<img width="100%" alt="Screenshot 2021-07-05 at 09 26 43" src="https://user-images.githubusercontent.com/408568/124440990-2237ec80-dd73-11eb-8375-f3b8cc2e447c.png">
+</div></div>
 # eAtlas 
 
 * Release makes it easier to add layers
@@ -48,7 +52,7 @@ https://biodar.github.io/bioAtlas/
  
 [Image source](https://www.lakeeriewx.com/Reference/Radar/Radar.html)
 
-* We can only get V/H values
+* We can only get V/H values, s
 
 
 # What is feasible?
