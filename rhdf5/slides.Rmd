@@ -11,32 +11,51 @@ output:
     reveal_options:
       slideNumber: true
       previewLinks: true
-# bibliography: refs.bib
+bibliography: refs.bib
 ---
 
 ## bioAtlas
 
-The aim of the project is to process .h5 data and hopefully generate some 3D bug models. Slide through time to see how they move around?
+The aim of the project is to process .h5 data and hopefully generate some 3D bug ~~models~~ points. Slide through time to see how they move around?
 
 # Project Overview
 
-* bioRad R package (fork etc)
+* bioRad R package (fork etc) [@bioRad]
 * jsfive JS package
 * Data from jasmin.ac.uk
 * Swim with bugs? Why is has there been none? Computation?
+
+# JASMIN
+
+* Seems even login is a service one needs to apply for (done)
+* Access to .h5s seems to be allowed only from a "domain" of the email registered. Not there yet in any case.
+
+# .h5
+
+* Format and managing data
+* Understanding various "products" [@dualpol]
+
 
 # eAtlas 
 
 * Release makes it easier to add layers
 * pointcloud can take normals, colours etc
-* 
 
-# JASMIN
+https://biodar.github.io/bioAtlas/
 
-* Seems even login is a service one needs to apply for (done)
-* Access to .h5s please!
+# Bugs on Radar?
+<img src="https://www.lakeeriewx.com/Reference/Radar/Images/ZDRValues.jpg" width="60%"/>
+ 
+[Image source](https://www.lakeeriewx.com/Reference/Radar/Radar.html)
 
-<!-- # References -->
+* We can only get V/H values
+
+
+# What is feasible?
+
+* ?? 
+
+# References
 
 
 <style>
