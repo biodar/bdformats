@@ -57,7 +57,11 @@ https://biodar.github.io/bioAtlas/
 
 # What is feasible?
 
-* ?? 
+* ~~conventional radar heatmaps~~
+* Not-so-useful pointclouds (done/doing)
+* Bug objects instead of points
+
+<img src="https://user-images.githubusercontent.com/408568/124448115-fcfaac80-dd79-11eb-85a3-db2dd18784ba.png" width="60%"/>
 
 # References
 
