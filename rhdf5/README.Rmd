@@ -14,7 +14,8 @@ library(bioRad)
 library(magrittr)
 p = "~/Documents/Research/BioDAR/Example_Met_Office_H5_Data_Share/"
 n = 50
-files = list.files(p, full.names = TRUE, pattern="polar_pl")
+# keep the sample to 0 degrees?
+files = list.files(p, full.names = TRUE, pattern="_polar_pl_radar20b0")
 files = sample(files, n)
 
 d = unlist(lapply(files, function(x)h5read(x, "dataset1/data1/data")))
@@ -44,7 +45,7 @@ dt$long = rl[[1]]$lon + delta_lon
 go = lapply(files, function(x)h5readAttributes(x,"dataset1/data1/what"))
 
 dt$gain = rep(unlist(lapply(go, function(x) x$gain)), 360*425)
-dt$offset = rep(unlist(lapply(go, function(x) x$gain)), 360*425)
+dt$offset = rep(unlist(lapply(go, function(x) x$offset)), 360*425)
 
 # add in the dates (time really)
 l = gregexpr("_polar_pl_radar20", basename(files[1]))
