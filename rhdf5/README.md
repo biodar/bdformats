@@ -1,5 +1,99 @@
-Going from hdf5 to ?
+Going from hdf5 to PointClouds
 ================
+
+## Load 24hr data
+
+For this Rmd file, we will try 50 files out of some 540
+
+``` r
+library(data.table)
+library(rhdf5)
+```
+
+    ## Warning: package 'rhdf5' was built under R version 4.0.3
+
+``` r
+library(bioRad)
+```
+
+    ## Welcome to bioRad version 0.5.2
+
+    ## Warning: Docker daemon is not running
+
+    ## Warning: bioRad functionality requiring Docker has been disabled
+    ## 
+    ## To enable Docker functionality, start Docker and run 'check_docker()'
+    ## in R
+
+``` r
+library(magrittr)
+p = "~/Documents/Research/BioDAR/Example_Met_Office_H5_Data_Share/"
+n = 50
+files = list.files(p, full.names = TRUE, pattern="polar_pl")
+files = sample(files, n)
+
+d = unlist(lapply(files, function(x)h5read(x, "dataset1/data1/data")))
+a = unlist(lapply(files, function(x)mean(h5read(x,"/dataset1/how/elangles")))) %>% round
+  
+dt = data.frame(value=d,theta=rep(c(1:360),425),radius=rep(c(1:425)*600,each=360), a=rep(a, each=(360*425)))
+dt = as.data.table(dt)
+
+rl = unique(lapply(files[1:50], function(x) h5readAttributes(x,"/where")))
+if(length(rl) != 1) stop("different radar dataset")
+
+# get x,y,z
+dt$x = dt$radius*sin(90-dt$a)*cos(dt$theta)
+dt$y = dt$radius*sin(90-dt$a)*sin(dt$theta)
+dt$z = (beam_height(dt$radius, dt$a, k = 4/3, lat = rl[[1]]$lat, re = 6378, rp = 6357) + rl[[1]]$height) %>% round
+
+# continue Chris's comments/code
+# Now calculate the change in latitude and longitude for each of those points
+# https://stackoverflow.com/questions/2187657/calculate-second-point-knowing-the-starting-point-and-distance
+delta_lon = dt$x/(111320*cos(rl[[1]]$lat))  # dx, dy in meters
+delta_lat = dt$y/110540                       # result in degrees long/lat
+# Calculate the lat and long of each point in the radar scan
+dt$lat  = rl[[1]]$lat + delta_lat
+dt$long = rl[[1]]$lon + delta_lon
+
+# get gain & offset
+go = lapply(files, function(x)h5readAttributes(x,"dataset1/data1/what"))
+
+dt$gain = rep(unlist(lapply(go, function(x) x$gain)), 360*425)
+dt$offset = rep(unlist(lapply(go, function(x) x$gain)), 360*425)
+
+# add in the dates (time really)
+l = gregexpr("_polar_pl_radar20", basename(files[1]))
+dates = substr(basename(files), 1, l[[1]][1] - 1)
+dates = as.POSIXct(dates, format = "%Y%m%d%H%M")
+dt$date = rep(dates, each=360*425)
+
+# clean up
+dt = dt[dt$value != 0]
+
+# calc Z/dbZ
+dt$value = (dt$value * dt$gain) + dt$offset
+
+dt$gain = NULL
+dt$offset = NULL
+# dt$theta = NULL
+# dt$radius = NULL
+# dt$a = NULL
+rm(delta_lon, delta_lat, go)
+
+# bio targets between 0 & 2
+# dt = dt[dt$value > 0 & dt$value <= 2]
+plot(table(dt$value))
+```
+
+![](README_files/figure-gfm/24hr-sample-1.png)<!-- -->
+
+``` r
+# summary of values
+summary(dt$value)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##    0.20   20.90   25.50   26.26   30.10  112.40
 
 ## Understand .h5
 
@@ -173,11 +267,7 @@ library(rgdal)
 
 ``` r
 library(rhdf5)
-```
 
-    ## Warning: package 'rhdf5' was built under R version 4.0.3
-
-``` r
 f <- "https://github.com/biodar/bdformats/releases/download/1/sample.h5"
 if(!file.exists(basename(f))) {
   download.file(f, destfile = basename(f))
@@ -370,3 +460,18 @@ find beam height calculation in beam\_height function
 beam\_height(range, elev, k = 4/3, lat = 51, re = 6378, rp = 6357 This
 is how to call the function with our latitude The description can be
 found here <http://adriaandokter.com/bioRad/reference/beam_height.html>
+
+## bioRad
+
+The package fails to read the Example data we despite the above reads
+using the same underlying package `rhdf5` package.
+
+``` r
+library(bioRad)
+# from bioRad vignette
+my_pvol <- read_pvolfile(f)
+# error is at rhdf5::H5Fis_hdf5  and reported upstream
+# despite
+rhdf5::H5Fis_hdf5(f)
+#> TRUE
+```
