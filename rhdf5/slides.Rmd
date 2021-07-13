@@ -52,7 +52,7 @@ https://biodar.github.io/bioAtlas/
  
 [Image source](https://www.lakeeriewx.com/Reference/Radar/Radar.html)
 
-* We can only get V/H values, s
+* We can only get V/H values from the dual-pol radars?  
 
 
 # What is feasible?
@@ -60,6 +60,7 @@ https://biodar.github.io/bioAtlas/
 * ~~conventional radar heatmaps~~
 * Not-so-useful pointclouds (done/doing)
 * Bug objects instead of points
+* ?? thinking cap needed
 
 <img src="https://user-images.githubusercontent.com/408568/124448115-fcfaac80-dd79-11eb-85a3-db2dd18784ba.png" width="60%"/>
 
