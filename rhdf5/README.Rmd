@@ -5,7 +5,8 @@ output: github_document
 
 ## Load 24hr data
 
-For this Rmd file, we will try 50 files out of some 540
+For this Rmd file, we will try 50 files out of some ~540. According to [@martin2007discrimination], a typical dBZ to detect insects (what is an insect?) is (17). There does not seem to be a standard let a lone a gold standard value as elsewhere it was something like 0-4dbZ.
+
 ```{r 24hr-sample}
 library(data.table)
 library(rhdf5)
@@ -68,7 +69,7 @@ rm(delta_lon, delta_lat, go)
 
 # bio targets between 0 & 2
 # dt = dt[dt$value > 0 & dt$value <= 2]
-plot(table(dt$value))
+# plot(table(dt$value[dt$value]))
 # summary of values
 summary(dt$value)
 ```

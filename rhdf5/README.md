@@ -3,7 +3,10 @@ Going from hdf5 to PointClouds
 
 ## Load 24hr data
 
-For this Rmd file, we will try 50 files out of some 540
+For this Rmd file, we will try 50 files out of some \~540. According to
+\[@martin2007discrimination\], a typical dBZ is (17). There does not
+seem to be a standard let a lone a gold standard value as elsewhere it
+was something like 0-4dbZ.
 
 ``` r
 library(data.table)
@@ -18,18 +21,16 @@ library(bioRad)
 
     ## Welcome to bioRad version 0.5.2
 
-    ## Warning: Docker daemon is not running
+    ## Docker daemon running, Docker functionality enabled
 
-    ## Warning: bioRad functionality requiring Docker has been disabled
-    ## 
-    ## To enable Docker functionality, start Docker and run 'check_docker()'
-    ## in R
+    ## No vol2bird Docker image found. Please run update_docker() to download.
 
 ``` r
 library(magrittr)
 p = "~/Documents/Research/BioDAR/Example_Met_Office_H5_Data_Share/"
 n = 50
-files = list.files(p, full.names = TRUE, pattern="polar_pl")
+# keep the sample to 0 degrees?
+files = list.files(p, full.names = TRUE, pattern="_polar_pl_radar20b0")
 files = sample(files, n)
 
 d = unlist(lapply(files, function(x)h5read(x, "dataset1/data1/data")))
@@ -59,7 +60,7 @@ dt$long = rl[[1]]$lon + delta_lon
 go = lapply(files, function(x)h5readAttributes(x,"dataset1/data1/what"))
 
 dt$gain = rep(unlist(lapply(go, function(x) x$gain)), 360*425)
-dt$offset = rep(unlist(lapply(go, function(x) x$gain)), 360*425)
+dt$offset = rep(unlist(lapply(go, function(x) x$offset)), 360*425)
 
 # add in the dates (time really)
 l = gregexpr("_polar_pl_radar20", basename(files[1]))
@@ -82,18 +83,13 @@ rm(delta_lon, delta_lat, go)
 
 # bio targets between 0 & 2
 # dt = dt[dt$value > 0 & dt$value <= 2]
-plot(table(dt$value))
-```
-
-![](README_files/figure-gfm/24hr-sample-1.png)<!-- -->
-
-``` r
+# plot(table(dt$value[dt$value]))
 # summary of values
 summary(dt$value)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##    0.20   20.90   25.50   26.26   30.10  112.40
+    ##  -31.90   -9.30   -5.20   -1.93    0.40   80.30
 
 ## Understand .h5
 
